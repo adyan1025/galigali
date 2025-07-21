@@ -1,5 +1,5 @@
 import discord
-import cal
+from calendar_scripts import cal_api
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -7,7 +7,7 @@ client = discord.Client(intents=intents)
 
 TOKEN = ""
 try:
-    with open("api_key.txt", "r") as file:
+    with open("secrets/api_key.txt", "r") as file:
         TOKEN = file.read()
 except FileNotFoundError:
     print("Error: The file 'my_file.txt' was not found.")
@@ -90,9 +90,15 @@ async def on_message(message):
 
     elif command.lower() == "!calendar" or command.lower() == "!c":
         try:
-            events = cal.calendar_api()
+            events = cal_api.calendar_api()
             await message.channel.send(events)
         except Exception as e:
             await message.channel.send(f"Calendar is unavailable due to an error: {e}")
+        try:
+            with open('images/cal_img.png', 'rb') as f:
+                picture = discord.File(f)
+                await message.channel.send(file=picture)
+        except Exception as e:
+            await message.channel.send("Failed to send image: " + e)
 
 client.run(TOKEN)

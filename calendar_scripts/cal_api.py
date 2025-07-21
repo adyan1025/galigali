@@ -7,7 +7,7 @@ import google_auth_oauthlib.flow
 import googleapiclient.discovery
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
-CREDENTIALS_FILE = 'credentials.json'
+CREDENTIALS_FILE = 'secrets/credentials.json'
 
 def calendar_api():
     creds = None
@@ -29,14 +29,18 @@ def calendar_api():
                                           maxResults=10, singleEvents=True,
                                           orderBy='startTime').execute()
     events = events_result.get('items', [])
-    events_list = ""
+    events_list = []
     if not events:
         print('No upcoming events found.')
-        return 'No upcoming events found.'
+        return []
+
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
-        print(start, event['summary'])
-        events_list += start + "\t" + event['summary'] + "\n"
+        summary = event.get('summary', 'No Summary Available')
+        print(start, summary)
+        events_list.append({'start': start, 'summary': summary})
+
     return events_list
 
+calendar_api()
     
